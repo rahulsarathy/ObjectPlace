@@ -13,6 +13,8 @@ import ARKit
 class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
+    //keeping an instance of spaceship available for other functions
+    var spaceShip: SCNNode?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,9 +27,33 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // Create a new scene
         let scene = SCNScene(named: "art.scnassets/ship.scn")!
-        
+        //searches the child nodes of the scene object and returns a node with the node specified
+      self.spaceShip = scene.rootNode.childNode(withName:"shipMesh", recursively: true)
+         spaceShip?.position.z = -1
+        //instead do SCNVector3Make
+        //constructs a SCNVector3 object with position 0,0,-1
+        self.spaceShip?.position = SCNVector3Make(0, 0, -1)
         // Set the scene to the view
-        sceneView.scene = scene
+        //sceneView.scene = scene
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        //guard in case touches.first returns null
+        //i think this essentially gets the touch object
+        guard let touch = touches.first else { return }
+        //results is an array of ARHitTestResult objects at the passed in point
+        let results = sceneView.hitTest(touch.location(in: sceneView), types: [ARHitTestResult.ResultType.featurePoint])
+        //takes one point from results
+        guard let hitFeature = results.last else { return }
+        //shoots a ray from the 2d coordinates to intersect with a 3d detected object
+        let hitTransform = SCNMatrix4(hitFeature.worldTransform)
+        //change hitposition to the new 3d coordinates
+        let hitPosition = SCNVector3Make(hitTransform.m41, hitTransform.m42, hitTransform.m43)
+        
+        let newSpaceShip = spaceShip!.clone()
+        newSpaceShip.position = hitPosition
+        sceneView.scene.rootNode.addChildNode(newSpaceShip)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
