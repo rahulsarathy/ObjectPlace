@@ -10,16 +10,20 @@ import UIKit
 import SceneKit
 import ARKit
 
-class ViewController: UIViewController, ARSCNViewDelegate {
+class ViewController: UIViewController, ARSCNViewDelegate, UITextFieldDelegate {
 
     @IBOutlet weak var changeText: UITextField!
     @IBOutlet var sceneView: ARSCNView!
+    
     //keeping an instance of spaceship available for other functions
     var spaceShip: SCNNode?
     var baseNode: SCNNode?
+    var inputText: String? = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        changeText.delegate = self
         
         // Set the view's delegate
         sceneView.delegate = self
@@ -65,8 +69,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         //change hitposition to the new 3d coordinates
         let hitPosition = SCNVector3Make(hitTransform.m41, hitTransform.m42, hitTransform.m43)
         
+        let newText: SCNText
+        
         //Creates Text Geometry with thickness
-        let newText = SCNText(string: "Test1", extrusionDepth: 1)
+        newText = SCNText(string: inputText, extrusionDepth: 1)
         
         //Creates a material object and adds to text
         let material = SCNMaterial()
@@ -90,6 +96,17 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene.rootNode.addChildNode(newNode)
         
     }
+    
+    //MARK: UITextFieldDelegate
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        inputText = changeText.text
+    }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
