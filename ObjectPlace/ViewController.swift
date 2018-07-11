@@ -15,6 +15,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UITextFieldDelegate {
     @IBOutlet weak var changeText: UITextField!
     @IBOutlet var sceneView: ARSCNView!
     
+    
     //keeping an instance of spaceship available for other functions
     var spaceShip: SCNNode?
     var baseNode: SCNNode?
@@ -54,6 +55,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, UITextFieldDelegate {
         
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
+        
+        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWorldOrigin]
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
